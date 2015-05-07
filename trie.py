@@ -6,18 +6,8 @@ class Trie(object):
         self.root = TrieNode(None)
 
     def add_word(self, word):
-        if len(word)>1:
-            s = word[0]
-            word = word[1:]
-            for c in self.root.children:
-                if c.has_value(s):
-                    c._add()
-                    c.add_word(word)
-                    break
-            else:
-                self.root.add_child(s,True)
-                self.root.add_word(s+word)
-    
+        self.root.add_word(word)
+        
     def remove(self,word):
         self.root.remove(word)
         
@@ -118,10 +108,12 @@ class TrieNode(object):
         nbr = 0
         node = self
         while nbr!=None:
-            s = word[0]
+            try:
+                s = word[0]
+            except IndexError:
+                nbr=None
+                break
             word = word[1:]
-            print word, nbr
-            print 's', s, 'child ', node.children
             for c in node.children:
                 nbr+=c.count
                 if c.has_value(s):
@@ -148,4 +140,4 @@ if __name__ == '__main__':
     t.add_word('paris')
     t.add_word('kawa')
     t.remove('madrid')
-    print t.find_by_word('power')
+    print t.find_by_word('powe')
