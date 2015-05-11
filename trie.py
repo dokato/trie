@@ -3,16 +3,28 @@
 
 class Trie(object):
     def __init__(self):
-        self.root = TrieNode(None)
+        self.root = TrieNode(None,0)
 
     def add_word(self, word):
         self.root.add_word(word)
+        self.root._add()
         
     def remove(self,word):
-        self.root.remove(word)
+        rem = self.root.remove(word)
+        if rem: self.root._pop()
+        return rem
         
     def find_by_word(self,word):
         return self.root.find_by_word(word)
+
+    def printasc(self):
+        return self.root.printasc()
+
+    def printdesc(self):
+        return self.root.printasc()[::-1]
+    
+    def find_by_number(self,k):
+        return self.root.find_by_number(k)
 
     @property
     def children(self):
@@ -22,10 +34,10 @@ class Trie(object):
         return 'Root<%s>'%(self.root.children)
 
 class TrieNode(object):
-    def __init__(self, val):
+    def __init__(self, val, cnt = 1):
         self.__value = val
         self.__children = []
-        self.__count = 1
+        self.__count = cnt
     
     @property
     def value(self):
@@ -98,8 +110,13 @@ class TrieNode(object):
             s = word
             for c in self.children:
                 if c.has_value(s):
-                    if not c._pop():
+                    if len(c.children)==0 and not c._pop():
                         self.__children.remove(c)
+                    else:
+                        if c.count==sum([x.count for x in c.children]):
+                            return False
+                        else:
+                            self.__children.remove(c)
                     return True
             else:
                 return False
@@ -111,20 +128,85 @@ class TrieNode(object):
             try:
                 s = word[0]
             except IndexError:
-                nbr=None
+                print 'zxcvbnm'
+                if node.count==sum([n.count for n in node.children]):
+                    nbr=None
                 break
             word = word[1:]
             for c in node.children:
                 nbr+=c.count
                 if c.has_value(s):
-                    nbr-=c.count
-                    node=c
+                    #print ' >>> ', c, c.children
+                    #print c.count , sum([n.count for n in c.children])
+                    sumleft = sum([n.count for n in c.children])
+                    if c.count!=sumleft:
+                        nbr+= c.count-sumleft
+                    nbr -= c.count
+                    node = c
                     break
             else:
                 nbr=None
             if len(node.children)<=0:
                 break
+        if nbr!=None and len(word)>0:
+            nbr=None
         return nbr
+
+    def find_by_number(self,k):
+        if k>0:
+            if len(self.__children)==0:
+                return self.__value 
+            l = [0]
+            ix=0
+            sumch = sum([n.count for n in self.__children])
+            if self.__count!=sumch:
+                l.append(l[-1]+1)
+                ix=-1
+            for c in self.children:
+                l.append(c.count+l[-1])
+            for k1,k2 in zip(l[:-1],l[1:]):
+                if k1 < k <= k2:
+                    vl = self.__value
+                    if self.__value==None: vl = ''
+                    if k<2 and self.__count!=sum([n.count for n in self.__children]):
+                        return vl
+                    word= vl + self.children[ix].find_by_number(k-k1)
+                    return word 
+                ix+=1
+            else:
+                return None 
+        else:
+            return self.__value
+        return word
+
+    def find_by_pref(self,pref):
+        node = self
+        prefidx = 0
+        while len(pref)>0:
+            s = pref[0]
+            pref = pref[1:]
+            for c in node.children:
+                if c.has_value(s):
+                    prefidx = c.count
+                    node=c
+                    break
+            else:
+                return 0 
+            if len(node.children)<=0:
+                break
+        if prefidx!=0 and len(pref)>0:
+            prefidx=0
+        return prefidx 
+
+    def printasc(self):
+        lst = []
+        val = self.__value
+        if val == None: val=''
+        for c in self.__children:
+            lst.extend(c.printasc())        
+        lst = [val+x for x in lst]
+        lstp = [val]*(self.__count-sum([n.count for n in self.children]))
+        return lstp+lst 
         
     def __repr__(self):
         return 'Trie<%s (%i)>'%(self.__value,self.__count)
@@ -138,6 +220,16 @@ if __name__ == '__main__':
     t.add_word('power')
     t.add_word('mouse')
     t.add_word('paris')
+    t.add_word('pari')
     t.add_word('kawa')
     t.remove('madrid')
-    print t.find_by_word('powe')
+    print t.find_by_word('kawa')
+    print t.find_by_word('money')
+    print t.find_by_word('mouse')
+    print t.find_by_word('pari')
+    print t.find_by_word('paris')
+    print t.find_by_word('power')
+    print t.root.find_by_pref('s')
+    print t.find_by_number(7)
+    print '*'*10
+    print t.printdesc()
