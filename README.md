@@ -10,10 +10,12 @@ ___
 You can use Trie as a dictionary. Dictionary implemented as a 
 command line parser *dictparser.py*. Here are some commands:
 
-> i word # insert word
-> r word # remove word from dictionary
-> f word # print lexicographic number
-> n l # print lth word
-> p pref # print number of words starting with prefix pref
-> a # print all words in lexicographic order
-> d # print all words in reversed order
+```
+ i word # insert word
+ r word # remove word from dictionary
+ f word # print lexicographic number
+ n l # print lth word
+ p pref # print number of words starting with prefix pref
+ a # print all words in lexicographic order
+ d # print all words in reversed order
+```
