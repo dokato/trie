@@ -19,6 +19,9 @@ class Trie(object):
 
     def printasc(self):
         return self.root.printasc()
+    
+    def find_by_pref(self,pref):
+        return self.root.find_by_pref(pref)
 
     def printdesc(self):
         return self.root.printasc()[::-1]
@@ -229,7 +232,7 @@ if __name__ == '__main__':
     print t.find_by_word('pari')
     print t.find_by_word('paris')
     print t.find_by_word('power')
-    print t.root.find_by_pref('s')
+    print t.root.find_by_pref('p')
     print t.find_by_number(7)
     print '*'*10
     print t.printdesc()
