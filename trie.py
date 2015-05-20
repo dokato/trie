@@ -6,24 +6,30 @@ class Trie(object):
         self.root = TrieNode(None,0)
 
     def add_word(self, word):
+        """add word to tree"""
         self.root.add_word(word)
         self.root._add()
         
     def remove(self,word):
+        """remove word from tree"""
         rem = self.root.remove(word)
         if rem: self.root._pop()
         return rem
         
     def find_by_word(self,word):
+        """find given *word* in tree, if not occures None is returned"""
         return self.root.find_by_word(word)
 
     def printasc(self):
+        """print all keys from tree in ascending order"""
         return self.root.printasc()
     
     def find_by_pref(self,pref):
+        """find number of words with given prefix *pref*"""
         return self.root.find_by_pref(pref)
 
     def printdesc(self):
+        """print all keys from tree in descending order"""
         return self.root.printasc()[::-1]
     
     def find_by_number(self,k):
@@ -52,6 +58,7 @@ class TrieNode(object):
     
     @property
     def children(self):
+        "returns list of childrens"
         return [x for x in self.__children]
     
     def _add(self):
@@ -65,6 +72,7 @@ class TrieNode(object):
             return True
 
     def add_child(self,value,early_child=False):
+        "add child and sort list of them"
         if early_child:
             tmpt = TrieNode(value)
             tmpt.__count -= 1
@@ -74,6 +82,7 @@ class TrieNode(object):
         self.__children.sort()
     
     def add_word(self,word):
+        "add word to node"
         if len(word)>1:
             s = word[0]
             word = word[1:]
@@ -95,9 +104,11 @@ class TrieNode(object):
                 self.add_child(s)
 
     def has_value(self,letter):
+        "check if value occures"
         return self.__value == letter
 
     def remove(self,word):
+        "remove from node"
         if len(word)>1:
             s = word[0]
             word = word[1:]
@@ -125,6 +136,7 @@ class TrieNode(object):
                 return False
 
     def find_by_word(self,word):
+        "find *word* in node"
         nbr = 0
         node = self
         while nbr!=None:
@@ -156,6 +168,7 @@ class TrieNode(object):
         return nbr
 
     def find_by_number(self,k):
+        "find lexicographic number of the word"
         if k>0:
             if len(self.__children)==0:
                 return self.__value 
@@ -183,6 +196,7 @@ class TrieNode(object):
         return word
 
     def find_by_pref(self,pref):
+        "number of keys starting with prefix *pref* in node"
         node = self
         prefidx = 0
         while len(pref)>0:
@@ -202,6 +216,7 @@ class TrieNode(object):
         return prefidx 
 
     def printasc(self):
+        "print all words from node in ascending order"
         lst = []
         val = self.__value
         if val == None: val=''
